@@ -1,52 +1,47 @@
-// -------------------------------
-// MUSEUMEME NFT MINT SYSTEM
-// SOLANA MAINNET + NFT.STORAGE
-// -------------------------------
+// -----------------------------------------
+// Museumeme – Solana MAINNET NFT Mint System
+// -----------------------------------------
 
-// Metaplex SDK
 import {
     Metaplex,
-    keypairIdentity,
-    bundlrStorage,
+    walletAdapterIdentity,
+    bundlrStorage
 } from "https://esm.sh/@metaplex-foundation/js";
 
-// Solana web3
 import {
-    Connection,
-    clusterApiUrl,
-    PublicKey
+    Connection
 } from "https://esm.sh/@solana/web3.js";
 
-// Connection — MAINNET
+// MAINNET bağlantısı
 const connection = new Connection("https://api.mainnet-beta.solana.com");
 
-// Metaplex Setup
+// Metaplex client
 let metaplex;
 
-// Cüzdan bağlandığında Metaplex hazır olsun
+// Phantom bağlanınca Metaplex hazır olsun
 async function setupMetaplex() {
-    const wallet = window.solana;
+    const provider = window.solana;
 
     metaplex = Metaplex.make(connection)
-        .use(keypairIdentity(wallet))
-        .use(bundlrStorage({
-            address: "https://node1.bundlr.network",
-            providerUrl: "https://api.mainnet-beta.solana.com",
-            timeout: 60000,
-        }));
+        .use(walletAdapterIdentity(provider))
+        .use(
+            bundlrStorage({
+                address: "https://node1.bundlr.network",
+                providerUrl: "https://api.mainnet-beta.solana.com",
+                timeout: 60000,
+            })
+        );
 }
 
-
-
-// -------------------------------
-// NFT MINT FUNCTION
-// -------------------------------
+// -----------------------------------------
+// NFT MINT
+// -----------------------------------------
 window.mintNFT = async function () {
 
-    const wallet = window.solana;
+    const provider = window.solana;
 
-    if (!wallet || !wallet.isConnected) {
-        alert("Lütfen önce cüzdanınızı bağlayın.");
+    if (!provider || !provider.isConnected) {
+        alert("Lütfen önce Phantom cüzdanınızı bağlayın.");
         return;
     }
 
@@ -55,43 +50,49 @@ window.mintNFT = async function () {
     const fileInput = document.getElementById("fileInput");
     const nftName = document.getElementById("nftName").value;
     const nftDesc = document.getElementById("nftDesc").value;
+    const status = document.getElementById("mintStatus");
+
+    status.innerHTML = "Yükleniyor, lütfen bekleyin...";
 
     if (!fileInput.files.length) {
-        alert("Lütfen bir fotoğraf yükleyin.");
-        return;
-    }
-    if (!nftName) {
-        alert("NFT adı boş olamaz.");
+        alert("Lütfen fotoğraf yükleyin.");
+        status.innerHTML = "";
         return;
     }
 
-    const file = fileInput.files[0];
-    const buffer = await file.arrayBuffer();
+    if (!nftName) {
+        alert("NFT adı gerekli.");
+        status.innerHTML = "";
+        return;
+    }
 
     try {
-        // 1 – Fotoğrafı yükleme (Metaplex + Bundlr)
-        const uploadedImage = await metaplex.storage().upload(buffer);
+        // 1) Fotoğrafı yükle
+        const file = fileInput.files[0];
+        const buffer = await file.arrayBuffer();
 
-        // 2 – Metadata oluşturma
+        const imageUri = await metaplex.storage().upload(buffer);
+
+        // 2) Metadata oluştur
         const { uri } = await metaplex.nfts().uploadMetadata({
             name: nftName,
             description: nftDesc,
-            image: uploadedImage,
+            image: imageUri,
         });
 
-        // 3 – MINT işlemi
+        // 3) NFT mint et
         const { nft } = await metaplex.nfts().create({
             uri: uri,
             name: nftName,
-            sellerFeeBasisPoints: 200,  // %2 komisyon
+            sellerFeeBasisPoints: 200,   // %2 komisyon
         });
 
-        alert("NFT başarıyla oluşturuldu! Mint Adresi:\n" + nft.address.toBase58());
-    }
+        status.innerHTML = "NFT başarıyla oluşturuldu!<br><br>Mint Adresi:<br>" + nft.address.toBase58();
+        alert("NFT MINT BAŞARILI!");
 
-    catch (err) {
+    } catch (err) {
         console.error(err);
-        alert("Mint işlemi sırasında hata oluştu: " + err.message);
+        status.innerHTML = "HATA: " + err.message;
+        alert("Mint hatası: " + err.message);
     }
-
-}
+};
