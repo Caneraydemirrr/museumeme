@@ -20,7 +20,7 @@
 
 <section class="hero">
     <h2>Fotoğrafını NFT'ye dönüştür</h2>
-    <p>Bir müzede veya sanat eserinin yanında çektiğin fotoğrafı yükle, sonra NFT olarak mint et.</p>
+    <p>Müzede çektiğin fotoğrafı yükle → NFT olarak mint et.</p>
 
     <form class="mint-box" onsubmit="return false;">
         <label>Fotoğraf Yükle:</label><br>
@@ -32,7 +32,7 @@
         <label>Açıklama:</label><br>
         <textarea id="nftDesc" placeholder="NFT açıklaması"></textarea><br><br>
 
-        <button type="button" class="btn" onclick="mintNFT()">NFT Oluştur</button>
+        <button type="button" class="btn" id="mintBtn">NFT Oluştur</button>
     </form>
 
     <p id="mintStatus" style="margin-top:20px; font-weight:bold;"></p>
