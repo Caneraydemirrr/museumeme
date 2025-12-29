@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>NFT Oluştur - Museumeme</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>Museumeme</h1>
+    <nav class="nav-links">
+        <a href="index.html">Ana Sayfa</a>
+        <a href="marketplace.html">Marketplace</a>
+        <a href="mint.html">NFT Oluştur</a>
+        <a href="profile.html">Profil</a>
+    </nav>
+    <button class="btn" onclick="connectWallet()">Cüzdan Bağla</button>
+</header>
+
+<section class="hero">
+    <h2>Fotoğrafını NFT'ye dönüştür</h2>
+    <p>Bir müzede veya sanat eserinin yanında çektiğin eğlenceli fotoğrafı yükle, NFT’ye dönüştür.</p>
+
+    <form class="mint-box">
+        <label>Fotoğraf Yükle:</label><br>
+        <input type="file" id="fileInput" accept="image/*"><br><br>
+
+        <label>NFT Adı:</label><br>
+        <input type="text" id="nftName" placeholder="Örn: Mona Lisa Meme"><br><br>
+
+        <label>Açıklama:</label><br>
+        <textarea id="nftDesc" placeholder="NFT açıklaması"></textarea><br><br>
+
+        <button type="button" class="btn" onclick="mintNFT()">NFT Oluştur</button>
+    </form>
+</section>
+
+<script src="wallet.js"></script>
+
+<script>
+function mintNFT() {
+    alert("NFT mint fonksiyonu burada çalışacak. Solana entegrasyonunu sonra ekleyeceğiz.");
+}
+</script>
+
+</body>
+</html>
