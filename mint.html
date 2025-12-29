@@ -20,29 +20,26 @@
 
 <section class="hero">
     <h2>Fotoğrafını NFT'ye dönüştür</h2>
-    <p>Bir müzede veya sanat eserinin yanında çektiğin eğlenceli fotoğrafı yükle, NFT’ye dönüştür.</p>
+    <p>Bir müzede veya sanat eserinin yanında çektiğin fotoğrafı yükle, sonra NFT olarak mint et.</p>
 
-    <form class="mint-box">
+    <form class="mint-box" onsubmit="return false;">
         <label>Fotoğraf Yükle:</label><br>
         <input type="file" id="fileInput" accept="image/*"><br><br>
 
         <label>NFT Adı:</label><br>
-        <input type="text" id="nftName" placeholder="Örn: Mona Lisa Meme"><br><br>
+        <input type="text" id="nftName" placeholder="Örn: Museumeme NFT"><br><br>
 
         <label>Açıklama:</label><br>
         <textarea id="nftDesc" placeholder="NFT açıklaması"></textarea><br><br>
 
         <button type="button" class="btn" onclick="mintNFT()">NFT Oluştur</button>
     </form>
+
+    <p id="mintStatus" style="margin-top:20px; font-weight:bold;"></p>
 </section>
 
 <script src="wallet.js"></script>
-
-<script>
-function mintNFT() {
-    alert("NFT mint fonksiyonu burada çalışacak. Solana entegrasyonunu sonra ekleyeceğiz.");
-}
-</script>
+<script type="module" src="mint.js"></script>
 
 </body>
 </html>
