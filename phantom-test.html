@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Phantom Test</title>
+</head>
+<body style="background:#111; color:#fff; font-family:Arial; padding:40px;">
+
+<h1>Phantom Test</h1>
+<p id="status">Phantom durumu kontrol ediliyor...</p>
+
+<button id="connectBtn" style="
+    padding:12px 20px;
+    background:#ffcc00;
+    border:none;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    border-radius:8px;
+">Phantom Bağla</button>
+
+<script>
+    const statusEl = document.getElementById("status");
+    const btn = document.getElementById("connectBtn");
+
+    // -----------------------------
+    // Phantom kontrolü
+    // -----------------------------
+    function checkPhantom() {
+        if (window.solana && window.solana.isPhantom) {
+            statusEl.innerText = "Phantom bulundu ✔";
+            return true;
+        } else {
+            statusEl.innerText = "❌ Phantom bulunamadı. Tarayıcıda Phantom yüklü mü?";
+            return false;
+        }
+    }
+
+    // -----------------------------
+    // Bağlantı
+    // -----------------------------
+    async function connectPhantom() {
+        if (!checkPhantom()) return;
+
+        try {
+            const resp = await window.solana.connect();
+            statusEl.innerText = "Bağlandı: " + resp.publicKey.toString();
+        } catch (err) {
+            statusEl.innerText = "❌ Bağlantı reddedildi.";
+        }
+    }
+
+    btn.onclick = connectPhantom;
+
+    // Sayfa açılınca çalıştır
+    checkPhantom();
+</script>
+
+</body>
+</html>
