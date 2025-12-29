@@ -1,12 +1,12 @@
 // -----------------------------
-//  WALLET BUTTON ELEMENT
+//  GET BUTTON
 // -----------------------------
 function getWalletButton() {
     return document.getElementById("walletButton");
 }
 
 // -----------------------------
-//  UPDATE BUTTON UI
+//  UPDATE UI
 // -----------------------------
 function updateWalletUI() {
     const btn = getWalletButton();
@@ -15,71 +15,63 @@ function updateWalletUI() {
     if (!btn) return;
 
     if (stored) {
-        // Bağlı cüzdan görünümü
         btn.innerHTML = `
             ${stored.substring(0, 4)}...${stored.slice(-4)}
-            <span id="disconnectBtn" style="
+            <span id="disconnectWallet" style="
                 margin-left:10px;
-                cursor:pointer;
                 color:#ff4444;
+                cursor:pointer;
                 font-weight:bold;
-            ">Çıkış Yap</span>
+            ">Çıkış</span>
         `;
 
-        // Çıkış yapma olayı
-        const dc = document.getElementById("disconnectBtn");
-        if (dc) {
-            dc.onclick = disconnectWallet;
-        }
+        document
+            .getElementById("disconnectWallet")
+            .addEventListener("click", disconnectWallet);
 
     } else {
-        // Bağlı değilken
-        btn.innerHTML = "Cüzdan Bağla";
-        btn.onclick = connectWallet;
+        btn.innerText = "Cüzdan Bağla";
+        btn.addEventListener("click", connectWallet);
     }
 }
 
 // -----------------------------
 //  CONNECT WALLET
 // -----------------------------
-window.connectWallet = async function () {
-    if (window.solana && window.solana.isPhantom) {
-        try {
-            const resp = await window.solana.connect();
-            const pubKey = resp.publicKey.toString();
-
-            localStorage.setItem("wallet", pubKey);
-            updateWalletUI();
-
-            alert("Cüzdan bağlandı: " + pubKey);
-
-        } catch (err) {
-            alert("Cüzdan bağlama reddedildi.");
-        }
-    } else {
+async function connectWallet() {
+    if (!window.solana || !window.solana.isPhantom) {
         alert("Lütfen Phantom Wallet kurun.");
+        return;
     }
-};
+
+    try {
+        const resp = await window.solana.connect();
+        const pub = resp.publicKey.toString();
+
+        localStorage.setItem("wallet", pub);
+        updateWalletUI();
+
+        alert("Cüzdan bağlandı: " + pub);
+    } catch (e) {
+        alert("Bağlantı reddedildi.");
+    }
+}
 
 // -----------------------------
 //  DISCONNECT WALLET
 // -----------------------------
-window.disconnectWallet = async function () {
+async function disconnectWallet() {
     try {
         await window.solana.disconnect();
-    } catch (e) {
-        // Phantom eski sürümse disconnect olmayabilir
-    }
+    } catch (e) {}
 
     localStorage.removeItem("wallet");
     updateWalletUI();
 
     alert("Cüzdan bağlantısı kesildi.");
-};
+}
 
 // -----------------------------
-//  AUTO LOAD
+//  AUTO INIT
 // -----------------------------
-window.onload = function () {
-    updateWalletUI();
-};
+window.addEventListener("load", updateWalletUI);
