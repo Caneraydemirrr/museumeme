@@ -9,18 +9,21 @@
 
 <header>
     <h1>Museumeme</h1>
+
     <nav class="nav-links">
         <a href="index.html">Ana Sayfa</a>
         <a href="marketplace.html">Marketplace</a>
         <a href="mint.html">NFT Oluştur</a>
         <a href="profile.html">Profil</a>
     </nav>
+
+    <!-- Cüzdan Bağlama Button -->
     <button class="btn" id="walletButton">Cüzdan Bağla</button>
 </header>
 
 <section class="hero">
     <h2>Fotoğrafını NFT'ye dönüştür</h2>
-    <p>Müzede çektiğin fotoğrafı yükle → NFT olarak mint et.</p>
+    <p>Müzede çektiğin fotoğrafı yükle → NFT'ye dönüştür.</p>
 
     <form class="mint-box" onsubmit="return false;">
         <label>Fotoğraf Yükle:</label><br>
@@ -32,13 +35,19 @@
         <label>Açıklama:</label><br>
         <textarea id="nftDesc" placeholder="NFT açıklaması"></textarea><br><br>
 
-        <button type="button" class="btn" id="mintBtn">NFT Oluştur</button>
+        <!-- Mint Button -->
+        <button type="button" class="btn" id="mintBtn" style="cursor:pointer;">
+            NFT Oluştur
+        </button>
     </form>
 
     <p id="mintStatus" style="margin-top:20px; font-weight:bold;"></p>
 </section>
 
+<!-- Wallet Script -->
 <script src="wallet.js"></script>
+
+<!-- Mint Script -->
 <script type="module" src="mint.js"></script>
 
 </body>
