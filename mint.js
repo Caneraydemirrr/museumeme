@@ -2,14 +2,14 @@ import {
     Connection,
     clusterApiUrl,
     Keypair,
-    PublicKey,
+    PublicKey
 } from "https://cdn.jsdelivr.net/npm/@solana/web3.js@1.89.0/+esm";
 
 import {
     Metaplex,
     keypairIdentity,
     irysStorage
-} from "https://esm.sh/@metaplex-foundation/js@0.19.5";
+} from "https://cdn.jsdelivr.net/npm/@metaplex-foundation/js@0.19.5/+esm";
 
 let walletPublicKey = null;
 
@@ -37,16 +37,17 @@ window.mintNFT = async function () {
     }
 
     if (fileInput.files.length === 0) {
-        alert("Bir fotoğraf yüklemelisiniz!");
+        alert("Fotoğraf yüklemelisin!");
         return;
     }
 
     const file = fileInput.files[0];
-    const imageBuffer = await file.arrayBuffer();
+    const arrayBuffer = await file.arrayBuffer();
 
     const connection = new Connection("https://api.mainnet-beta.solana.com");
 
-    const metaplex = Metaplex.make(connection)
+    const metaplex = Metaplex
+        .make(connection)
         .use(keypairIdentity(Keypair.generate()))
         .use(irysStorage({
             address: "https://node1.irys.xyz",
@@ -54,14 +55,12 @@ window.mintNFT = async function () {
             timeout: 60000
         }));
 
-
-    // ---- NFT Upload & Mint ----
     try {
         const { uri } = await metaplex.nfts().uploadMetadata({
             name,
             description,
             image: {
-                buffer: Buffer.from(imageBuffer),
+                buffer: Buffer.from(arrayBuffer),
                 filename: file.name,
                 contentType: file.type
             }
@@ -70,13 +69,13 @@ window.mintNFT = async function () {
         const { nft } = await metaplex.nfts().create({
             uri,
             name,
-            sellerFeeBasisPoints: 200, // %2 komisyon
+            sellerFeeBasisPoints: 200
         });
 
-        alert("NFT başarıyla oluşturuldu!\nMint Address:\n" + nft.address.toString());
+        alert("NFT Oluşturuldu!\nMint Address:\n" + nft.address.toString());
 
     } catch (e) {
         console.error(e);
-        alert("NFT oluşturulurken hata oluştu.");
+        alert("Hata oluştu: " + e.message);
     }
-}
+};
