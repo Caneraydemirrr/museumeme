@@ -9,45 +9,37 @@ import {
     irysStorage
 } from "https://esm.sh/@metaplex-foundation/js@0.19.5";
 
-// Cüzdan public key çek
+// Wallet çek
 function getWallet() {
     return localStorage.getItem("wallet");
 }
 
-// NFT Mint fonksiyonu
-window.mintNFT = async function () {
+// -----------------------------
+//  NFT MINT
+// -----------------------------
+async function mintNFT() {
 
     const mintStatus = document.getElementById("mintStatus");
     mintStatus.innerText = "";
 
-    const walletPubKey = getWallet();
-
-    if (!walletPubKey) {
-        alert("Önce Phantom cüzdan bağlayın!");
-        return;
-    }
+    const walletPub = getWallet();
+    if (!walletPub) return alert("Önce Phantom bağlayın!");
 
     const fileInput = document.getElementById("fileInput");
     const name = document.getElementById("nftName").value;
     const desc = document.getElementById("nftDesc").value;
 
-    if (!fileInput.files.length) {
-        alert("Fotoğraf yüklemelisiniz!");
-        return;
-    }
+    if (!fileInput.files.length) return alert("Fotoğraf yüklemelisiniz!");
 
     const file = fileInput.files[0];
-    const imgBuffer = await file.arrayBuffer();
+    const imgBuffer = new Uint8Array(await file.arrayBuffer());
 
-    mintStatus.innerText = "⏳ NFT yükleniyor... Lütfen bekleyin.";
+    mintStatus.innerText = "⏳ NFT yükleniyor...";
 
-    // Solana bağlantısı
     const connection = new Connection("https://api.mainnet-beta.solana.com");
 
-    // Phantom adaptörü
     const wallet = window.solana;
 
-    // Metaplex başlat
     const metaplex = Metaplex.make(connection)
         .use(walletAdapterIdentity(wallet))
         .use(irysStorage({
@@ -57,36 +49,38 @@ window.mintNFT = async function () {
         }));
 
     try {
-        // 1- Metadata + Görsel yükle
+        // 1) Metadata upload
         const { uri } = await metaplex.nfts().uploadMetadata({
             name,
             description: desc,
             image: {
-                buffer: new Uint8Array(imgBuffer),
+                buffer: imgBuffer,
                 fileName: file.name,
                 contentType: file.type
             }
         });
 
-        // 2- NFT Mint et
+        // 2) NFT mint
         const { nft } = await metaplex.nfts().create({
             uri,
             name,
-            sellerFeeBasisPoints: 200, // %2 komisyon
-            seller: new PublicKey(walletPubKey)
+            sellerFeeBasisPoints: 200,
+            seller: new PublicKey(walletPub)
         });
 
         mintStatus.innerText =
-            "🎉 NFT Mint Başarılı!\nMint Address: " + nft.address.toString();
+            "🎉 NFT Mint Başarılı!\n" + nft.address.toString();
 
-        alert("NFT başarıyla oluşturuldu!");
+        alert("NFT oluşturuldu!");
 
     } catch (err) {
         console.error(err);
-        mintStatus.innerText = "❌ Hata oluştu: " + err.message;
-        alert("NFT oluşturulurken hata oluştu.");
+        mintStatus.innerText = "❌ Hata: " + err.message;
+        alert("NFT mint sırasında hata oluştu.");
     }
-};
+}
 
-// Butona tıklanabilirlik fix
-document.getElementById("mintBtn").addEventListener("click", window.mintNFT);
+// Buton tetikleyici
+window.addEventListener("load", () => {
+    document.getElementById("mintBtn").addEventListener("click", mintNFT);
+});
