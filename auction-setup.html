@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>MUSEUMEME – Auction House Kurulumu</title>
+    <style>
+        body {
+            background: #111;
+            color: #fff;
+            font-family: Arial;
+            padding: 40px;
+            text-align: center;
+        }
+        button {
+            padding: 12px 20px;
+            background: #ffcc00;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .box {
+            background: #222;
+            padding: 25px;
+            border-radius: 12px;
+            width: 500px;
+            margin: auto;
+            margin-top: 40px;
+            border: 1px solid #333;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>MUSEUMEME MARKETPLACE</h1>
+    <h2>Auction House Kurulumu</h2>
+
+    <div class="box">
+        <h3>Cüzdan Bağla</h3>
+        <button onclick="connectWallet()">Phantom Bağla</button>
+        <p id="walletStatus"></p>
+    </div>
+
+    <div class="box">
+        <h3>Auction House Kurulum Ayarları</h3>
+
+        <label>Authority (Sen):</label><br>
+        <input id="authority" value="9JUR8xVSNFN2v8Xmz5JqJHRHp8AB3hZiTQf9sNzLEzTP">
+
+        <label>Fee Account (%2):</label><br>
+        <input id="fee" value="9JUR8xVSNFN2v8Xmz5JqJHRHp8AB3hZiTQf9sNzLEzTP">
+
+        <label>Treasury Mint (SOL):</label><br>
+        <input id="mint" value="So11111111111111111111111111111111111111112">
+
+        <button onclick="createAH()">Auction House Oluştur</button>
+        <p id="setupStatus"></p>
+    </div>
+
+
+<script type="module">
+
+import {
+    Connection,
+    PublicKey
+} from "https://cdn.jsdelivr.net/npm/@solana/web3.js@1.89.0/+esm";
+
+import {
+    Metaplex,
+    walletAdapterIdentity,
+    toPublicKey
+} from "https://esm.sh/@metaplex-foundation/js@0.19.5";
+
+let wallet = null;
+
+window.connectWallet = async function () {
+    if (!window.solana?.isPhantom) {
+        alert("Lütfen Phantom Wallet yükleyin.");
+        return;
+    }
+
+    const resp = await window.solana.connect();
+    wallet = window.solana;
+    
+    document.getElementById("walletStatus").innerHTML =
+        "Bağlandı: " + resp.publicKey.toString();
+};
+
+window.createAH = async function () {
+
+    if (!wallet) {
+        alert("Önce cüzdan bağlayın.");
+        return;
+    }
+
+    const authority = document.getElementById("authority").value;
+    const fee = document.getElementById("fee").value;
+    const mint = document.getElementById("mint").value;
+
+    document.getElementById("setupStatus").innerText =
+        "⏳ Blockchain üzerinde Auction House oluşturuluyor...";
+
+    const connection = new Connection("https://api.mainnet-beta.solana.com");
+
+    const metaplex = Metaplex.make(connection)
+        .use(walletAdapterIdentity(wallet));
+
+    try {
+        const { auctionHouse } = await metaplex
+            .auctionHouse()
+            .create({
+                authority: new PublicKey(authority),
+                sellerFeeBasisPoints: 200,
+                requiresSignOff: false,
+                canChangeSalePrice: true,
+                feeWithdrawalDestination: new PublicKey(fee),
+                treasuryWithdrawalDestination: new PublicKey(fee),
+                treasuryMint: new PublicKey(mint)
+            });
+
+        document.getElementById("setupStatus").innerHTML =
+            "🎉 Auction House Oluşturuldu!<br><br>" +
+            "<b>AUCTION HOUSE ID:</b><br>" +
+            auctionHouse.address.toString();
+
+        alert("Auction House Başarıyla Oluşturuldu!");
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById("setupStatus").innerText =
+            "❌ Hata: " + err.message;
+    }
+};
+
+</script>
+
+</body>
+</html>
