@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil - Museumeme</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>Museumeme</h1>
+    <nav class="nav-links">
+        <a href="index.html">Ana Sayfa</a>
+        <a href="marketplace.html">Marketplace</a>
+        <a href="mint.html">NFT Oluştur</a>
+        <a href="profile.html">Profil</a>
+    </nav>
+    <button class="btn" onclick="connectWallet()">Cüzdan Bağla</button>
+</header>
+
+<section class="hero">
+    <h2>Profilim</h2>
+    <p>Mint ettiğin NFT'ler burada gözükecek.</p>
+</section>
+
+<section class="sample-section">
+    <div id="myNFTs" class="market-grid">
+        <!-- Kullanıcının NFT'leri burada gösterilecek -->
+    </div>
+</section>
+
+<script src="wallet.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const wallet = localStorage.getItem("wallet");
+
+    if (!wallet) {
+        document.getElementById("myNFTs").innerHTML = "<p>Cüzdan bağlı değil.</p>";
+        return;
+    }
+
+    // Geçici test verisi
+    document.getElementById("myNFTs").innerHTML = `
+        <div>
+            <img src="https://i.imgur.com/OKNQ1B2.jpeg" width="250" style="border-radius:12px;">
+            <p>Benim NFT örneğim</p>
+        </div>
+    `;
+});
+</script>
+
+</body>
+</html>
